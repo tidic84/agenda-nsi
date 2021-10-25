@@ -22,7 +22,12 @@ def ecrire_dans_l_agenda():
         pickler.dump(jour.event)
         pickler.dump(jour.place)
         pickler.dump(jour.time)
+        
 
-
-def afficher_lcd():
-    pass
+def recuperer_infos_jour():
+    c = input("Quel jour souhaitez-vous consulter ?")
+    with open("{}".format(c), "rb") as info_n:
+        depickler = pickle.Unpickler(info_n)
+        paper = []
+        for i in range(0,4):
+            paper.append(depickler.load())
