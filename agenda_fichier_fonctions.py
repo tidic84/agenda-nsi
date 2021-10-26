@@ -13,19 +13,17 @@ def add_event(date, event):
     event = event.split("/")
     jour = day(date, event)
     with open("{}".format("/events/"+date+".event"), "wb") as day_n:
-        day_n.write(jour.date)
-        day_n.write(jour.event)
-        day_n.write(jour.place)
+        day_n.write(jour.date + "/")
+        day_n.write(jour.event + "/")
+        day_n.write(jour.place + "/")
         day_n.write(jour.time)
         
 
 def get_event(date):
     with open("{}".format("/events/"+date+".event"), "rb") as info_n:
-        paper = []
-        for i in range(0,4):
-            paper.append(info_n.read())
+        paper = info_n.read()
     return paper
- 
+
 add_event("26-10-2021", "rien/nulle part/16:16")
-event = get_event("26-10-2021")
+event = get_event("26-10-2021").split("/")
 print(event)
