@@ -59,32 +59,29 @@ def supp_event(date, elemsupp):
 
 #add_event("27-10-2021","1/2/3/4")
 #add_event("27-10-2021","9/0/4/8")
-print(get_events("27-10-2021"))
+#print(get_events("27-10-2021"))
 
-tm_mday = localtime().tm_mday
-tm_mon = localtime().tm_mon
-tm_year = localtime().tm_year
+show_date = mktime(localtime())
 
-def show_events(day, month, year):
-    date = str(day)+"-"+str(month)+"-"+str(year)
-    print(date)
+def show_events(ts_date):
+    show_date = str(localtime(ts_date).tm_mday)+"-"+str(localtime(ts_date).tm_mon)+"-"+str(localtime(ts_date).tm_year)
     try:
-      get_events(date)
+      get_events(show_date)
     except:
-      print("Il n'y a pas d'évenemnents ce jour ci")
+      print(show_date,"Il n'y a pas d'évenemnents ce jour ci")
     else:
-      print("Aujourd'hui,", get_events(date))
+      print(show_date, "Aujourd'hui,", get_events(show_date))
 
 
-show_events(tm_mday, tm_mon, tm_year)
+show_events(show_date)
 
 while True:
     if microbit.button_a.was_pressed():
-        tm_mday -= 1
-        show_events(tm_mday, tm_mon, tm_year)
+        show_date -= 86400
+        show_events(show_date)
     if microbit.button_b.was_pressed():
-        tm_mday += 1
-        show_events(tm_mday, tm_mon, tm_year)
+        show_date += 86400
+        show_events(show_date)
     
     
     
