@@ -1,4 +1,3 @@
-
 class day():
     """classe créant un objet correspondant
     à une journée : un jour, ce que l'on prévoit de faire/où/quelle h"""
@@ -11,34 +10,46 @@ class day():
         self.period = activity[3]
 
 
-def add_event(date, event):
-  try:
-    get_event(date)
-  except:
-    event = event.split("/")
-    jour = day(date, event)
-    with open("{}".format(date+".event"), "wb") as day_n:
-        day_n.write(jour.date + "/")
-        day_n.write(jour.event + "/")
-        day_n.write(jour.place + "/")
-        day_n.write(jour.time + "/")
-        day_n.write(jour.period)
-  else:
-    event = event.split("/")
-    jour = day(date, event)
-    with open("{}".format(date+".event"), "ab") as day_n:
-        day_n.write(":" + jour.date + "/")
-        day_n.write(jour.event + "/")
-        day_n.write(jour.place + "/")
-        day_n.write(jour.time + "/")
-        day_n.write(jour.period)
-        
-
-def get_event(date):
-    with open("{}".format(date+".event"), "rb") as info_n:
+def get_events(date):
+  with open("{}".format(date+".event"), "rb") as info_n:
         paper = info_n.read()
-    return paper
+  return paper.split(":")
 
-add_event("26-10-2021", "rien/nulle part/16:16/3h")
-event = get_event("26-10-2021").split("/")
-print(event)
+
+def get_event(date, n):
+  with open("{}".format(date+".event"), "rb") as info_n:
+        paper = info_n.read()
+  return paper.split(":")[n]
+
+
+def add_event(date, event):
+  try: 
+    get_events(date)
+  except:
+    ev = event.split("/")
+    jour = day(date, ev)
+    with open("{}".format(date+".event"), "wb") as day_n:
+      day_n.write(date + ":")
+      day_n.write(event)
+  else:
+    ev = event.split("/")
+    jour = day(date, ev)
+    with open("{}".format(date+".event"), "ab") as day_n:
+        day_n.write(":" + event)
+        
+    
+def modifier_event(date, modif, new_data):
+    list_1 = get_events(date)
+    list_1[modif] = new_data
+    #ce que je met à la place
+    with open(date+".event", "wb") as nv_fichier:
+        nv_fichier.write(":".join(list_1))
+        
+       
+def supp_event(date, elemsupp):
+    # quel événement du jour *date* je veux modifier
+    list_1 = get_events(date)
+    del list_1[elemsupp]
+    #j'écris le nv contenu
+    with open(date+".event", "wb") as nv_fichier:
+        nv_fichier.write(":".join(list_1))
