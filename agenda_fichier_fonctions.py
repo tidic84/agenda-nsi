@@ -26,7 +26,7 @@ def get_event(date, n):
 
 
 def add_event(date, event):
-  try: 
+  try:
     get_events(date)
   except:
     ev = event.split("/")
