@@ -75,13 +75,13 @@ show_date = mktime(localtime())
 
 def show_events(ts_date):
     """Fonction servant a afficher les évenements d'un jour défini."""
-    show_date = str(localtime(ts_date).tm_mday)+"-"+str(localtime(ts_date).tm_mon)+"-"+str(localtime(ts_date).tm_year)
+    nrm_date = str(localtime(ts_date).tm_mday)+"-"+str(localtime(ts_date).tm_mon)+"-"+str(localtime(ts_date).tm_year)
     try:
-      get_events(show_date)
+      get_events(nrm_date)
     except:
-      print(show_date,"Il n'y a pas d'évenemnents ce jour ci")
+      print(nrm_date,"Il n'y a pas d'évenemnents ce jour ci")
     else:
-      print(show_date, "Aujourd'hui,", get_events(show_date))
+      print(nrm_date, "Aujourd'hui,", get_events(show_date))
 
 
 show_events(show_date)
