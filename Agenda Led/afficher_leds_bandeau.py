@@ -1,38 +1,93 @@
-from microbit import *
-import time
-from neopixel import NeoPixel
-from projet_nsi_fichier_fonctions import *
+import microbit
+from time import *
 
-nb_led = 31
-bandeau_led = NeoPixel(microbit.pin0, nb_led)   # Cree une instance pour piloter 10 WS2812b
+class day():
+    """classe créant un objet correspondant
+    à une journée : un jour, ce que l'on prévoit de faire/où/quelle h"""
 
-def showLeds(ts_date):
-    mois = localtime(ts_date).tm_mon
-    year = localtime(ts_date).tm_year
-    if dayInMon(ts_date):
-      nb_led=31
+    def __init__(self, jour, activity=[]): # je creer un objet de la class day avec
+                                           # les paramètres jour (string) et activity(liste de 4 objets)
+        self.date = jour                   # l'objet créé a pour date jour
+        self.event = activity[0]           # pour event le premier objet de la liste activity
+        self.place = activity[1]           # pour place le deuxieme objet de la liste activity
+        self.time = activity[2]            # pour time le troisieme objet de la liste activity
+        self.period = activity[3]          # pour period le quatrieme objet de la liste activity
+
+
+def get_events(date):
+    """fonction prenant en parametre la date(str) et retournant les événements du jour date(list)"""
+    with open("{}".format(date+".event"), "rb") as info_n:
+        paper = info_n.read()
+    return paper.split(":")
+
+
+def get_event(date, n):
+  """fonction prenant en parametre la date(str) et le numero de l'événement n(int)
+  retournant les caractéristiques de l'événement numero n"""
+  with open("{}".format(date+".event"), "rb") as info_n:
+        paper = info_n.read()
+  return paper.split(":")[n]
+
+
+def add_event(date, event):
+    """fonction prenant en parametres une date(str) et un evenement(list)
+    créant un fichier avec la date contenant le nouvel evenement si aucun evenement n'est prevu à cette
+    date et ajoutant l'evenement au fichier du jour date si un evenement existe déjà pour celui-ci"""
+    try:
+        get_events(date)
+    except:
+        ev = event.split("/")
+        jour = day(date, ev)
+        with open("{}".format(date+".event"), "wb") as day_n:
+            day_n.write(date + ":")
+            day_n.write(event)
     else:
-      nb_led=30
-    for i in range(1, nb_led+1):
-      #print((str(i) + "-" + str(mois) + "-" + str(year)))
-      if test_event(str(i) + "-" + str(mois) + "-" + str(year)) == 0:
-        bandeau_led[i-1] = (255, 0, 0)  # Configure les Leds en rouge
-      else:
-        bandeau_led[i-1] = (0, 255, 0)  # Configure les Leds en vert
-    if dayInMon(ts_date) == False: 
-      bandeau_led[30] = (0, 0, 0) # Eteint la dernière led
-    bandeau_led.show()  # Affiche toutes les Leds    
-    
-showLeds(show_date)
+        ev = event.split("/")
+        jour = day(date, ev)
+        with open("{}".format(date+".event"), "ab") as day_n:
+            day_n.write(":" + event)
+def modifier_event(date, modif, new_data):
+    """fonction prenant en parametres une date(str), le numero de l'evenement à modifier(int)
+    et la nouvelle valeur de remplacement(str) et remplacant la valeur à modifier par
+    la nouvele dans le fichier date"""
+    list_1 = get_events(date)
+    list_1[modif] = new_data
+    #ce que je met à la place
+    with open(date+".event", "wb") as nv_fichier:
+        nv_fichier.write(":".join(list_1))
 
-while True:
-    
-    if microbit.button_a.was_pressed():
-        show_date -= 2628000
-        showLeds(show_date)
-        show_events(show_date)  
-    if microbit.button_b.was_pressed():
-        show_date += 2628000
-        showLeds(show_date)  
-        show_events(show_date)  
 
+def supp_event(date, elemsupp):
+    """fonction prenant en parametre un date(str) et le numero d'un evenement a supprimer(int)
+    puisle supprime du fichier date"""
+    list_1 = get_events(date)
+    del list_1[elemsupp]
+    #j'écris le nv contenu
+    with open(date+".event", "wb") as nv_fichier:
+        nv_fichier.write(":".join(list_1))
+
+local_date = mktime(localtime())
+show_date = mktime(localtime())
+for i in range(localtime(show_date).tm_mon, 30):
+    show_date -= 86400
+def test_event(date):
+    """Fonction prenant en parametre une date (jj-mm-aaaa) et renvoyant 0 si il n'y a pas d'évenement ou 1 si il y a des evenements."""
+    try:
+        get_events(date)
+    except:
+        return 0
+    else:
+        return 1
+
+def dayInMon(ts):
+    """Cette fonction prend en paramètre le timstamp d'un jour et renvoie le nombre de jours dans son mois en timestamp."""
+    mon = localtime(ts).tm_mon
+    day = localtime(ts).tm_mday
+    for i in range(day, 31):
+        ts += 86400
+    if localtime(ts).tm_mday == 31:
+        return 2678400
+    elif localtime(ts).tm_mday == 1:
+        return 2592000
+    else:
+        return 2419200
